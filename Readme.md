@@ -32,7 +32,7 @@ _`.editorconfig`, `.eslintrc`, `.gitattributes`, `.gitignore`, `.travis.yml`, `p
 
 <img width="769" alt="" src="https://user-images.githubusercontent.com/10909/35275197-07d8e79e-0050-11e8-95c1-a30a433687d8.png">
 
-Клонировать репозиторий можно так:
+Клонировать репозиторий можно так::
 
 ```
 git clone SSH-адрес_вашего_форка
