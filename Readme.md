@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Антон Калиберов](https://up.htmlacademy.ru/javascript/20/user/101053).
-* Наставник: `Дмитрий Рябинин`.
+* Наставник: [Дмитрий Рябинин](https://up.htmlacademy.ru/javascript/20/user/63289).
 
 ---
 
