@@ -17,6 +17,10 @@ var PIN_HEIGHT = 70;
 var PIN_WIDTH = 50;
 var apartments = [];
 
+var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+var pinsArea = document.querySelector('.map__pins');
+document.querySelector('.map').classList.remove('map--faded');
+
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
@@ -67,11 +71,13 @@ var generateApartments = function () {
   }
 };
 
-var generatePin = function (apartment) {
-  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+//
+var createPin = function (apartment) {
   var onePin = pinTemplate.cloneNode(true);
   var pinImage = onePin.querySelector('img');
-  onePin.style.cssText = 'left:' + (apartment.location.x + PIN_WIDTH / 2) + 'px; top:' + (apartment.location.y + PIN_HEIGHT) + 'px;';
+  var pinX = apartment.location.x - PIN_WIDTH / 2;
+  var pinY = apartment.location.y - PIN_HEIGHT;
+  onePin.style.cssText = 'left:' + pinX + 'px; top:' + pinY + 'px;';
   pinImage.src = apartment.author;
   pinImage.alt = apartment.offer.title;
   return onePin;
@@ -79,11 +85,9 @@ var generatePin = function (apartment) {
 
 var renderPins = function () {
   generateApartments();
-  document.querySelector('.map').classList.remove('map--faded');
-  var pinsArea = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < apartments.length; i++) {
-    fragment.appendChild(generatePin(apartments[i]));
+    fragment.appendChild(createPin(apartments[i]));
   }
   pinsArea.appendChild(fragment);
 };
