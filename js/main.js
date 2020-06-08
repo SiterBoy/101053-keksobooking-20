@@ -21,6 +21,7 @@ var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pi
 var pinsArea = document.querySelector('.map__pins');
 var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 var map = document.querySelector('.map');
+var mapFiltersContainer = map.querySelector('.map__filters-container');
 
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -174,6 +175,17 @@ var createCard = function (apartment) {
   return oneCard;
 };
 
+
 map.classList.remove('map--faded');
 renderPins();
-map.insertAdjacentElement('beforeBegin', createCard(apartments[0]));
+
+var renderCard = function (data) {
+  var card = createCard(data);
+  mapFiltersContainer.insertAdjacentElement('beforebegin', card);
+};
+
+renderCard(apartments[0]);
+
+
+
+
