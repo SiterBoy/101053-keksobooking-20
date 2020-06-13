@@ -15,6 +15,8 @@ var MAP_MIN_Y = 130;
 var MAP_MAX_Y = 630;
 var PIN_HEIGHT = 70;
 var PIN_WIDTH = 50;
+var MAIN_PIN_HEIGTH = 80;
+var MAIN_PIN_WIDTH = 65;
 var apartments = [];
 
 var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -22,6 +24,9 @@ var pinsArea = document.querySelector('.map__pins');
 var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 var map = document.querySelector('.map');
 var mapFiltersContainer = map.querySelector('.map__filters-container');
+var adForm = document.querySelector('.ad-form');
+var mapForm = mapFiltersContainer.querySelector('.map__filters');
+var mainPin = document.querySelector('.map__pin--main');
 
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -175,17 +180,94 @@ var createCard = function (apartment) {
   return oneCard;
 };
 
-
-map.classList.remove('map--faded');
-renderPins();
-
 var renderCard = function (data) {
   var card = createCard(data);
   mapFiltersContainer.insertAdjacentElement('beforebegin', card);
 };
 
+var switchElementsStatus = function (elems, status) {
+  var elements = adForm.querySelectorAll(elems);
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].disabled = status;
+  }
+};
+
+var activatePage = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  // Включаем все fieldset-ы в блоке формы
+  switchElementsStatus('fieldset', false);
+  // Включаем все селекты на форме карты
+  switchElementsStatus('.map__filter', false);
+  // Включаем чекбоксы на форме карты
+  mapForm.querySelector('.map__features').disabled = false;
+  changeAdress();
+};
+
+var deactivatePage = function () {
+  map.classList.add('map--faded');
+  adForm.classList.add('ad-form--disabled');
+  // Выключаем все fieldset-ы в блоке формы
+  switchElementsStatus('fieldset', true);
+  // Выключаем все селекты на форме карты
+  switchElementsStatus('.map__filter', true);
+  // Выключаем чекбоксы на форме карты
+  mapForm.querySelector('.map__features').disabled = true;
+};
+
+var onMainPinClick = function (evt) {
+  if (evt.button === 0) {
+    activatePage();
+  }
+};
+
+var giveCoordMainPin = function () {
+  var coords = {};
+  coords.x = parseInt(mainPin.style.left, 10);
+  coords.y = parseInt(mainPin.style.top, 10);
+  return coords;
+};
+
+var changeAdress = function () {
+  var coords = giveCoordMainPin();
+  var x = coords.x + MAIN_PIN_WIDTH / 2;
+  var y = coords.y + MAIN_PIN_HEIGTH / 2;
+  adForm.querySelector('input[name="address"]').value = 'Координата 1: ' + x + ' Координата 2: ' + y;
+};
+
+var roomNumberElement = document.querySelector('#room_number');
+var guestNumberElement = document.querySelector('#capacity');
+
+var validateRoomsAndGuests = function () {
+  if (roomNumberElement.value === 100 && guestNumberElement.value !== 0) {
+    guestNumberElement.setCustomValidity('Когда комнат ' + roomNumberElement.value + ', тогда это жилье не для гостей. ');
+  } else if (guestNumberElement.value === 0 && roomNumberElement.value !== 100) {
+    guestNumberElement.setCustomValidity('Если Ваше жилье не для гостей, то у Вас должно быть больше комнат.');
+  } else if (roomNumberElement.value < guestNumberElement.value) {
+    guestNumberElement.setCustomValidity('По правилам сервиса максимум 1 гость на 1 комнату!');
+  } else {
+    guestNumberElement.setCustomValidity('');
+  }
+  guestNumberElement.reportValidity();
+};
+
+roomNumberElement.addEventListener('change', function () {
+  validateRoomsAndGuests();
+});
+
+guestNumberElement.addEventListener('change', function () {
+  validateRoomsAndGuests();
+});
+
+
+mainPin.addEventListener('keydown', function (evt) {
+  evt.preventDefault();
+  if (evt.key === 'Enter') {
+    activatePage();
+  }
+});
+
+renderPins();
 renderCard(apartments[0]);
-
-
-
-
+deactivatePage();
+mainPin.addEventListener('mousedown', onMainPinClick);
