@@ -15,6 +15,8 @@ var MAP_MIN_Y = 130;
 var MAP_MAX_Y = 630;
 var PIN_HEIGHT = 70;
 var PIN_WIDTH = 50;
+var MAIN_PIN_HEIGTH = 80;
+var MAIN_PIN_WIDTH = 65;
 var apartments = [];
 
 var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -22,6 +24,9 @@ var pinsArea = document.querySelector('.map__pins');
 var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 var map = document.querySelector('.map');
 var mapFiltersContainer = map.querySelector('.map__filters-container');
+var adForm = document.querySelector('.ad-form');
+var mapForm = mapFiltersContainer.querySelector('.map__filters');
+var mainPin = document.querySelector('.map__pin--main');
 
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -175,17 +180,91 @@ var createCard = function (apartment) {
   return oneCard;
 };
 
-
-map.classList.remove('map--faded');
-renderPins();
-
 var renderCard = function (data) {
   var card = createCard(data);
   mapFiltersContainer.insertAdjacentElement('beforebegin', card);
 };
 
+var fieldsets = adForm.querySelectorAll('fieldset');
+var mapFilters = adForm.querySelectorAll('.map__filter');
+
+var switchElementsStatus = function (array, status) {
+  for (var i = 0; i < array.length; i++) {
+    array[i].disabled = status;
+  }
+};
+
+var activatePage = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  // Включаем все fieldset-ы в блоке формы
+  switchElementsStatus(fieldsets, false);
+  // Включаем все селекты на форме карты
+  switchElementsStatus(mapFilters, false);
+  // Включаем чекбоксы на форме карты
+  mapForm.querySelector('.map__features').disabled = false;
+  validateRoomsAndGuests();
+};
+
+var deactivatePage = function () {
+  map.classList.add('map--faded');
+  adForm.classList.add('ad-form--disabled');
+  // Выключаем все fieldset-ы в блоке формы
+  switchElementsStatus(fieldsets, true);
+  // Выключаем все селекты на форме карты
+  switchElementsStatus(mapFilters, true);
+  // Выключаем чекбоксы на форме карты
+  mapForm.querySelector('.map__features').disabled = true;
+  changeAdress();
+};
+
+var onMainPinClick = function (evt) {
+  if (evt.button === 0) {
+    activatePage();
+  }
+};
+
+var giveCoordMainPin = function () {
+  var coords = {};
+  coords.x = Math.round(parseInt(mainPin.style.left, 10) + MAIN_PIN_WIDTH / 2);
+  coords.y = Math.round(parseInt(mainPin.style.top, 10) + MAIN_PIN_HEIGTH / 2);
+  return coords;
+};
+
+var changeAdress = function () {
+  var coords = giveCoordMainPin();
+  adForm.querySelector('input[name="address"]').value = coords.x + ', ' + coords.y;
+};
+
+var roomNumberElement = document.querySelector('#room_number');
+var guestNumberElement = document.querySelector('#capacity');
+
+var validateRoomsAndGuests = function () {
+  if (parseInt(roomNumberElement.value, 10) === 100 && parseInt(guestNumberElement.value, 10) !== 0) {
+    guestNumberElement.setCustomValidity('Когда комнат ' + parseInt(roomNumberElement.value, 10) + ', тогда это жилье не для гостей. ');
+  } else if (parseInt(guestNumberElement.value, 10) === 0 && parseInt(roomNumberElement.value, 10) !== 100) {
+    guestNumberElement.setCustomValidity('Если Ваше жилье не для гостей, то у Вас должно быть больше комнат.');
+  } else if (parseInt(roomNumberElement.value, 10) < parseInt(guestNumberElement.value, 10)) {
+    guestNumberElement.setCustomValidity('По правилам сервиса максимум 1 гость на 1 комнату!');
+  } else {
+    guestNumberElement.setCustomValidity('');
+  }
+};
+
+var onRoomsAndGuestsChange = function () {
+  validateRoomsAndGuests();
+  guestNumberElement.reportValidity();
+};
+
+roomNumberElement.addEventListener('change', onRoomsAndGuestsChange);
+guestNumberElement.addEventListener('change', onRoomsAndGuestsChange);
+
+mainPin.addEventListener('keydown', function (evt) {
+  evt.preventDefault();
+  activatePage();
+});
+
+renderPins();
 renderCard(apartments[0]);
-
-
-
-
+deactivatePage();
+mainPin.addEventListener('mousedown', onMainPinClick);
