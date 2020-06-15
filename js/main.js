@@ -185,10 +185,12 @@ var renderCard = function (data) {
   mapFiltersContainer.insertAdjacentElement('beforebegin', card);
 };
 
-var switchElementsStatus = function (elems, status) {
-  var elements = adForm.querySelectorAll(elems);
-  for (var i = 0; i < elements.length; i++) {
-    elements[i].disabled = status;
+var fieldsets = adForm.querySelectorAll('fieldset');
+var mapFilters = adForm.querySelectorAll('.map__filter');
+
+var switchElementsStatus = function (array, status) {
+  for (var i = 0; i < array.length; i++) {
+    array[i].disabled = status;
   }
 };
 
@@ -196,23 +198,24 @@ var activatePage = function () {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   // Включаем все fieldset-ы в блоке формы
-  switchElementsStatus('fieldset', false);
+  switchElementsStatus(fieldsets, false);
   // Включаем все селекты на форме карты
-  switchElementsStatus('.map__filter', false);
+  switchElementsStatus(mapFilters, false);
   // Включаем чекбоксы на форме карты
   mapForm.querySelector('.map__features').disabled = false;
-  changeAdress();
+  validateRoomsAndGuests();
 };
 
 var deactivatePage = function () {
   map.classList.add('map--faded');
   adForm.classList.add('ad-form--disabled');
   // Выключаем все fieldset-ы в блоке формы
-  switchElementsStatus('fieldset', true);
+  switchElementsStatus(fieldsets, true);
   // Выключаем все селекты на форме карты
-  switchElementsStatus('.map__filter', true);
+  switchElementsStatus(mapFilters, true);
   // Выключаем чекбоксы на форме карты
   mapForm.querySelector('.map__features').disabled = true;
+  changeAdress();
 };
 
 var onMainPinClick = function (evt) {
@@ -223,48 +226,42 @@ var onMainPinClick = function (evt) {
 
 var giveCoordMainPin = function () {
   var coords = {};
-  coords.x = parseInt(mainPin.style.left, 10);
-  coords.y = parseInt(mainPin.style.top, 10);
+  coords.x = Math.round(parseInt(mainPin.style.left, 10) + MAIN_PIN_WIDTH / 2);
+  coords.y = Math.round(parseInt(mainPin.style.top, 10) + MAIN_PIN_HEIGTH / 2);
   return coords;
 };
 
 var changeAdress = function () {
   var coords = giveCoordMainPin();
-  var x = coords.x + MAIN_PIN_WIDTH / 2;
-  var y = coords.y + MAIN_PIN_HEIGTH / 2;
-  adForm.querySelector('input[name="address"]').value = 'Координата 1: ' + x + ' Координата 2: ' + y;
+  adForm.querySelector('input[name="address"]').value = coords.x + ', ' + coords.y;
 };
 
 var roomNumberElement = document.querySelector('#room_number');
 var guestNumberElement = document.querySelector('#capacity');
 
 var validateRoomsAndGuests = function () {
-  if (roomNumberElement.value === 100 && guestNumberElement.value !== 0) {
-    guestNumberElement.setCustomValidity('Когда комнат ' + roomNumberElement.value + ', тогда это жилье не для гостей. ');
-  } else if (guestNumberElement.value === 0 && roomNumberElement.value !== 100) {
+  if (parseInt(roomNumberElement.value, 10) === 100 && parseInt(guestNumberElement.value, 10) !== 0) {
+    guestNumberElement.setCustomValidity('Когда комнат ' + parseInt(roomNumberElement.value, 10) + ', тогда это жилье не для гостей. ');
+  } else if (parseInt(guestNumberElement.value, 10) === 0 && parseInt(roomNumberElement.value, 10) !== 100) {
     guestNumberElement.setCustomValidity('Если Ваше жилье не для гостей, то у Вас должно быть больше комнат.');
-  } else if (roomNumberElement.value < guestNumberElement.value) {
+  } else if (parseInt(roomNumberElement.value, 10) < parseInt(guestNumberElement.value, 10)) {
     guestNumberElement.setCustomValidity('По правилам сервиса максимум 1 гость на 1 комнату!');
   } else {
     guestNumberElement.setCustomValidity('');
   }
+};
+
+var onRoomsAndGuestsChange = function () {
+  validateRoomsAndGuests();
   guestNumberElement.reportValidity();
 };
 
-roomNumberElement.addEventListener('change', function () {
-  validateRoomsAndGuests();
-});
-
-guestNumberElement.addEventListener('change', function () {
-  validateRoomsAndGuests();
-});
-
+roomNumberElement.addEventListener('change', onRoomsAndGuestsChange);
+guestNumberElement.addEventListener('change', onRoomsAndGuestsChange);
 
 mainPin.addEventListener('keydown', function (evt) {
   evt.preventDefault();
-  if (evt.key === 'Enter') {
-    activatePage();
-  }
+  activatePage();
 });
 
 renderPins();
