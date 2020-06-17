@@ -56,6 +56,7 @@ var generateApartments = function () {
     var coordX = getRandomNumber(0, MAP_WIDTH);
     var coordY = getRandomNumber(MAP_MIN_Y, MAP_MAX_Y);
     apartments[i] = {
+      id: i,
       author: AVATAR_URL + (i + 1) + '.png',
       offer: {
         title: TITLES[i],
@@ -81,6 +82,7 @@ var generateApartments = function () {
 //
 var createPin = function (apartment) {
   var onePin = pinTemplate.cloneNode(true);
+  onePin.dataset.id = apartment.id;
   var pinImage = onePin.querySelector('img');
   var pinX = apartment.location.x - PIN_WIDTH / 2;
   var pinY = apartment.location.y - PIN_HEIGHT;
@@ -92,11 +94,14 @@ var createPin = function (apartment) {
 
 var renderPins = function () {
   generateApartments();
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < apartments.length; i++) {
-    fragment.appendChild(createPin(apartments[i]));
+  var currentNumOfPins = pinsArea.querySelectorAll('button').length;
+  if (currentNumOfPins === 1) {
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < apartments.length; i++) {
+      fragment.appendChild(createPin(apartments[i]));
+    }
+    pinsArea.appendChild(fragment);
   }
-  pinsArea.appendChild(fragment);
 };
 
 var createFeatures = function (features) {
@@ -203,6 +208,8 @@ var activatePage = function () {
   switchElementsStatus(mapFilters, false);
   // Включаем чекбоксы на форме карты
   mapForm.querySelector('.map__features').disabled = false;
+  renderPins();
+  createEventsOnPins();
   validateRoomsAndGuests();
 };
 
@@ -258,13 +265,125 @@ var onRoomsAndGuestsChange = function () {
 
 roomNumberElement.addEventListener('change', onRoomsAndGuestsChange);
 guestNumberElement.addEventListener('change', onRoomsAndGuestsChange);
+mainPin.addEventListener('mousedown', onMainPinClick);
 
-mainPin.addEventListener('keydown', function (evt) {
-  evt.preventDefault();
+mainPin.addEventListener('keydown', function () {
+  // evt.preventDefault(); - С этим превентом перестают табом переключаться элементы
   activatePage();
 });
 
-renderPins();
-renderCard(apartments[0]);
+var onPinClick = function (evt, id) {
+  evt.preventDefault();
+  var currentApartmentId = id || evt.target.parentElement.dataset.id;
+  deleteCurrentCard();
+  renderCard(apartments[currentApartmentId]);
+  var popupCard = document.querySelector('.popup__close');
+  popupCard.addEventListener('click', onPopupClick);
+  pinsArea.addEventListener('keydown', onPopupEscPress);
+};
+
+var deleteCurrentCard = function () {
+  var currentCard = document.querySelector('.map__card');
+  if (currentCard) {
+    currentCard.remove();
+  }
+};
+
+var onPopupClick = function (evt) {
+  evt.preventDefault();
+  deleteCurrentCard();
+};
+
+var onPopupEscPress = function (evt) {
+  // evt.preventDefault(); - С этим превентом перестают табом переключаться элементы
+  if (evt.key === 'Escape') {
+    deleteCurrentCard();
+    pinsArea.removeEventListener('keydown', onPopupEscPress);
+  }
+};
+
+var onPinEnterPress = function (evt) {
+  if (evt.key === 'Enter') {
+    var currentApartmentId = evt.target.dataset.id;
+    onPinClick(evt, currentApartmentId);
+  }
+};
+
+var createEventsOnPins = function () {
+  var pins = pinsArea.querySelectorAll('.map__pin');
+  // начинаем с 1 элемента, чтобы искулючить главный пин
+  for (var i = 1; i < pins.length; i++) {
+    pins[i].addEventListener('click', onPinClick);
+    pins[i].addEventListener('keydown', onPinEnterPress);
+  }
+};
+
+// validation
+
+var typeOfApartSelect = adForm.querySelector('#type');
+var priceOfApart = adForm.querySelector('#price');
+
+var onChangeTypeOfApartAndPrice = function (evt) {
+  switch (evt.target.value) {
+    case 'flat':
+      priceOfApart.min = 1000;
+      priceOfApart.placeholder = 1000;
+      break;
+    case 'bungalo':
+      priceOfApart.min = 0;
+      priceOfApart.placeholder = 0;
+      break;
+    case 'house':
+      priceOfApart.min = 5000;
+      priceOfApart.placeholder = 5000;
+      break;
+    case 'palace':
+      priceOfApart.min = 10000;
+      priceOfApart.placeholder = 10000;
+      break;
+  }
+};
+
+typeOfApartSelect.addEventListener('change', onChangeTypeOfApartAndPrice);
+
+var timeInSelect = adForm.querySelector('#timein');
+var timeOutSelect = adForm.querySelector('#timeout');
+
+var onTimeInChange = function () {
+  for (var i = 0; i < timeOutSelect.children.length; i++) {
+    timeOutSelect.children[i].selected = false;
+    if (timeInSelect.value === timeOutSelect.children[i].value) {
+      timeOutSelect.children[i].selected = true;
+    }
+  }
+};
+
+var onTimeOutChange = function () {
+  for (var i = 0; i < timeInSelect.children.length; i++) {
+    timeInSelect.children[i].selected = false;
+    if (timeOutSelect.value === timeInSelect.children[i].value) {
+      timeInSelect.children[i].selected = true;
+    }
+  }
+};
+
+timeInSelect.addEventListener('change', onTimeInChange);
+timeOutSelect.addEventListener('change', onTimeOutChange);
+
+var avatarFileInput = adForm.querySelector('#avatar');
+var imagesFileInput = adForm.querySelector('#images');
+
+var onInputPhotosChange = function (evt) {
+  var currentType = evt.target.files[0].type;
+  if (currentType !== 'image/jpeg' && currentType !== 'image/png') {
+    evt.target.setCustomValidity('Файл должен быть изображением');
+  } else {
+    evt.target.setCustomValidity('');
+  }
+  evt.target.reportValidity();
+};
+
+avatarFileInput.addEventListener('change', onInputPhotosChange);
+imagesFileInput.addEventListener('change', onInputPhotosChange);
+
 deactivatePage();
-mainPin.addEventListener('mousedown', onMainPinClick);
