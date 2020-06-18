@@ -291,7 +291,7 @@ var onPopupClick = function (evt) {
 var onPopupEscPress = function (evt) {
   if (evt.key === 'Escape') {
     deleteCurrentCard();
-    pinsArea.removeEventListener('keydown', onPopupEscPress);
+    document.removeEventListener('keydown', onPopupEscPress);
   }
 };
 
