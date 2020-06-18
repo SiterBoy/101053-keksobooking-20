@@ -27,6 +27,7 @@ var mapFiltersContainer = map.querySelector('.map__filters-container');
 var adForm = document.querySelector('.ad-form');
 var mapForm = mapFiltersContainer.querySelector('.map__filters');
 var mainPin = document.querySelector('.map__pin--main');
+var isActive = false;
 
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -56,7 +57,6 @@ var generateApartments = function () {
     var coordX = getRandomNumber(0, MAP_WIDTH);
     var coordY = getRandomNumber(MAP_MIN_Y, MAP_MAX_Y);
     apartments[i] = {
-      id: i,
       author: AVATAR_URL + (i + 1) + '.png',
       offer: {
         title: TITLES[i],
@@ -89,19 +89,23 @@ var createPin = function (apartment) {
   onePin.style.cssText = 'left:' + pinX + 'px; top:' + pinY + 'px;';
   pinImage.src = apartment.author;
   pinImage.alt = apartment.offer.title;
+
+  onePin.addEventListener('click', function () {
+    deleteCurrentCard();
+    renderCard(apartment);
+    var popupCard = document.querySelector('.popup__close');
+    popupCard.addEventListener('click', onPopupClick);
+    document.addEventListener('keydown', onPopupEscPress);
+  });
   return onePin;
 };
 
 var renderPins = function () {
-  generateApartments();
-  var currentNumOfPins = pinsArea.querySelectorAll('button').length;
-  if (currentNumOfPins === 1) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < apartments.length; i++) {
-      fragment.appendChild(createPin(apartments[i]));
-    }
-    pinsArea.appendChild(fragment);
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < apartments.length; i++) {
+    fragment.appendChild(createPin(apartments[i]));
   }
+  pinsArea.appendChild(fragment);
 };
 
 var createFeatures = function (features) {
@@ -185,8 +189,8 @@ var createCard = function (apartment) {
   return oneCard;
 };
 
-var renderCard = function (data) {
-  var card = createCard(data);
+var renderCard = function (apartment) {
+  var card = createCard(apartment);
   mapFiltersContainer.insertAdjacentElement('beforebegin', card);
 };
 
@@ -208,9 +212,10 @@ var activatePage = function () {
   switchElementsStatus(mapFilters, false);
   // Включаем чекбоксы на форме карты
   mapForm.querySelector('.map__features').disabled = false;
+  generateApartments();
   renderPins();
-  createEventsOnPins();
   validateRoomsAndGuests();
+  isActive = true;
 };
 
 var deactivatePage = function () {
@@ -223,10 +228,11 @@ var deactivatePage = function () {
   // Выключаем чекбоксы на форме карты
   mapForm.querySelector('.map__features').disabled = true;
   changeAdress();
+  isActive = false;
 };
 
-var onMainPinClick = function (evt) {
-  if (evt.button === 0) {
+var onMainPinClick = function () {
+  if (!isActive) {
     activatePage();
   }
 };
@@ -247,11 +253,14 @@ var roomNumberElement = document.querySelector('#room_number');
 var guestNumberElement = document.querySelector('#capacity');
 
 var validateRoomsAndGuests = function () {
-  if (parseInt(roomNumberElement.value, 10) === 100 && parseInt(guestNumberElement.value, 10) !== 0) {
-    guestNumberElement.setCustomValidity('Когда комнат ' + parseInt(roomNumberElement.value, 10) + ', тогда это жилье не для гостей. ');
-  } else if (parseInt(guestNumberElement.value, 10) === 0 && parseInt(roomNumberElement.value, 10) !== 100) {
+  var roomNumberValue = parseInt(roomNumberElement.value, 10);
+  var guestNumbervalue = parseInt(guestNumberElement.value, 10);
+
+  if (roomNumberValue === 100 && guestNumbervalue !== 0) {
+    guestNumberElement.setCustomValidity('Когда комнат ' + roomNumberValue + ', тогда это жилье не для гостей. ');
+  } else if (guestNumbervalue === 0 && roomNumberValue !== 100) {
     guestNumberElement.setCustomValidity('Если Ваше жилье не для гостей, то у Вас должно быть больше комнат.');
-  } else if (parseInt(roomNumberElement.value, 10) < parseInt(guestNumberElement.value, 10)) {
+  } else if (roomNumberValue < guestNumbervalue) {
     guestNumberElement.setCustomValidity('По правилам сервиса максимум 1 гость на 1 комнату!');
   } else {
     guestNumberElement.setCustomValidity('');
@@ -265,22 +274,7 @@ var onRoomsAndGuestsChange = function () {
 
 roomNumberElement.addEventListener('change', onRoomsAndGuestsChange);
 guestNumberElement.addEventListener('change', onRoomsAndGuestsChange);
-mainPin.addEventListener('mousedown', onMainPinClick);
-
-mainPin.addEventListener('keydown', function () {
-  // evt.preventDefault(); - С этим превентом перестают табом переключаться элементы
-  activatePage();
-});
-
-var onPinClick = function (evt, id) {
-  evt.preventDefault();
-  var currentApartmentId = id || evt.target.parentElement.dataset.id;
-  deleteCurrentCard();
-  renderCard(apartments[currentApartmentId]);
-  var popupCard = document.querySelector('.popup__close');
-  popupCard.addEventListener('click', onPopupClick);
-  pinsArea.addEventListener('keydown', onPopupEscPress);
-};
+mainPin.addEventListener('click', onMainPinClick);
 
 var deleteCurrentCard = function () {
   var currentCard = document.querySelector('.map__card');
@@ -295,26 +289,9 @@ var onPopupClick = function (evt) {
 };
 
 var onPopupEscPress = function (evt) {
-  // evt.preventDefault(); - С этим превентом перестают табом переключаться элементы
   if (evt.key === 'Escape') {
     deleteCurrentCard();
     pinsArea.removeEventListener('keydown', onPopupEscPress);
-  }
-};
-
-var onPinEnterPress = function (evt) {
-  if (evt.key === 'Enter') {
-    var currentApartmentId = evt.target.dataset.id;
-    onPinClick(evt, currentApartmentId);
-  }
-};
-
-var createEventsOnPins = function () {
-  var pins = pinsArea.querySelectorAll('.map__pin');
-  // начинаем с 1 элемента, чтобы искулючить главный пин
-  for (var i = 1; i < pins.length; i++) {
-    pins[i].addEventListener('click', onPinClick);
-    pins[i].addEventListener('keydown', onPinEnterPress);
   }
 };
 
@@ -324,24 +301,25 @@ var typeOfApartSelect = adForm.querySelector('#type');
 var priceOfApart = adForm.querySelector('#price');
 
 var onChangeTypeOfApartAndPrice = function (evt) {
+  var value = 0;
   switch (evt.target.value) {
     case 'flat':
-      priceOfApart.min = 1000;
-      priceOfApart.placeholder = 1000;
+      value = 1000;
       break;
     case 'bungalo':
-      priceOfApart.min = 0;
-      priceOfApart.placeholder = 0;
+      value = 0;
       break;
     case 'house':
-      priceOfApart.min = 5000;
-      priceOfApart.placeholder = 5000;
+      value = 5000;
       break;
     case 'palace':
-      priceOfApart.min = 10000;
-      priceOfApart.placeholder = 10000;
+      value = 10000;
       break;
   }
+
+  priceOfApart.min = value;
+  priceOfApart.placeholder = value;
+
 };
 
 typeOfApartSelect.addEventListener('change', onChangeTypeOfApartAndPrice);
@@ -349,22 +327,12 @@ typeOfApartSelect.addEventListener('change', onChangeTypeOfApartAndPrice);
 var timeInSelect = adForm.querySelector('#timein');
 var timeOutSelect = adForm.querySelector('#timeout');
 
-var onTimeInChange = function () {
-  for (var i = 0; i < timeOutSelect.children.length; i++) {
-    timeOutSelect.children[i].selected = false;
-    if (timeInSelect.value === timeOutSelect.children[i].value) {
-      timeOutSelect.children[i].selected = true;
-    }
-  }
+var onTimeInChange = function (evt) {
+  timeOutSelect.value = evt.target.value;
 };
 
-var onTimeOutChange = function () {
-  for (var i = 0; i < timeInSelect.children.length; i++) {
-    timeInSelect.children[i].selected = false;
-    if (timeOutSelect.value === timeInSelect.children[i].value) {
-      timeInSelect.children[i].selected = true;
-    }
-  }
+var onTimeOutChange = function (evt) {
+  timeInSelect.value = evt.target.value;
 };
 
 timeInSelect.addEventListener('change', onTimeInChange);
