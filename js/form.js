@@ -1,15 +1,9 @@
 'use strict';
 
 (function () {
-  var giveCoordMainPin = function () {
-    var coords = {};
-    coords.x = Math.round(parseInt(window.consts.mainPin.style.left, 10) + window.consts.MAIN_PIN_WIDTH / 2);
-    coords.y = Math.round(parseInt(window.consts.mainPin.style.top, 10) + window.consts.MAIN_PIN_HEIGTH / 2);
-    return coords;
-  };
 
   var changeAdress = function () {
-    var coords = giveCoordMainPin();
+    var coords = window.pins.giveCoordMainPin();
     window.consts.adForm.querySelector('input[name="address"]').value = coords.x + ', ' + coords.y;
   };
 
@@ -105,6 +99,7 @@
 
   var fieldsets = window.consts.adForm.querySelectorAll('fieldset');
   var mapFilters = window.consts.adForm.querySelectorAll('.map__filter');
+  var mapForm = window.consts.mapFiltersContainer.querySelector('.map__filters');
 
   var switchAllForms = function (status) {
     // Инверсия статуса для стилей
@@ -114,17 +109,24 @@
     // Включаем/выключаем все селекты на форме карты
     switchElementsStatus(mapFilters, newStatus);
     // Включаем/выключаем чекбоксы на форме карты
-    window.consts.mapForm.querySelector('.map__features').disabled = newStatus;
+    mapForm.querySelector('.map__features').disabled = newStatus;
   };
 
-  var init = function (status) {
+  var activate = function (status) {
     switchAllForms(status);
     validateRoomsAndGuests();
     changeAdress();
+
+    if (status) {
+      window.consts.adForm.classList.remove('ad-form--disabled');
+    } else {
+      window.consts.adForm.classList.add('ad-form--disabled');
+    }
+
   };
 
   window.form = {
-    init: init
+    activate: activate
   };
 
 })();

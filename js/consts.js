@@ -16,8 +16,8 @@
   var map = document.querySelector('.map');
   var mapFiltersContainer = map.querySelector('.map__filters-container');
   var adForm = document.querySelector('.ad-form');
-  var mapForm = mapFiltersContainer.querySelector('.map__filters');
   var mainPin = document.querySelector('.map__pin--main');
+
 
   window.consts = {
     MAX_ROOMS: MAX_ROOMS,
@@ -33,7 +33,6 @@
     map: map,
     mapFiltersContainer: mapFiltersContainer,
     adForm: adForm,
-    mapForm: mapForm,
     mainPin: mainPin
   };
 

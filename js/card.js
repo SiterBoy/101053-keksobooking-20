@@ -85,13 +85,18 @@
     return oneCard;
   };
 
-  var renderCard = function (apartment) {
+  var render = function (apartment) {
     var card = createCard(apartment);
     window.consts.mapFiltersContainer.insertAdjacentElement('beforebegin', card);
   };
 
+  var addCloseEvents = function () {
+    var popupCard = document.querySelector('.popup__close');
+    popupCard.addEventListener('click', window.card.onPopupClick);
+    document.addEventListener('keydown', window.card.onPopupEscPress);
+  };
 
-  var deleteCurrentCard = function () {
+  var deleteCurrent = function () {
     var currentCard = document.querySelector('.map__card');
     if (currentCard) {
       currentCard.remove();
@@ -100,21 +105,22 @@
 
   var onPopupClick = function (evt) {
     evt.preventDefault();
-    deleteCurrentCard();
+    deleteCurrent();
   };
 
   var onPopupEscPress = function (evt) {
     if (evt.key === 'Escape') {
-      deleteCurrentCard();
+      deleteCurrent();
       document.removeEventListener('keydown', onPopupEscPress);
     }
   };
 
   window.card = {
-    deleteCurrentCard: deleteCurrentCard,
-    renderCard: renderCard,
+    deleteCurrent: deleteCurrent,
+    render: render,
     onPopupClick: onPopupClick,
-    onPopupEscPress: onPopupEscPress
+    onPopupEscPress: onPopupEscPress,
+    addCloseEvents: addCloseEvents
   };
 
 })();
