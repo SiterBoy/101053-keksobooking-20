@@ -14,15 +14,15 @@
 
   var giveCoordsOfTarget = function () {
     var coords = {
-      x: Math.floor(parseInt(mainPin.style.left, 10) - MAIN_PIN_WIDTH / 2),
-      y: Math.floor(parseInt(mainPin.style.top, 10)) - MAIN_PIN_HEIGTH
+      x: Math.floor(mainPin.offsetLeft + MAIN_PIN_WIDTH / 2),
+      y: Math.floor(mainPin.offsetTop + MAIN_PIN_HEIGTH)
     };
     return coords;
   };
 
   var setPosition = function (x, y) {
-    mainPin.style.left = x + 'px';
-    mainPin.style.top = y + 'px';
+    mainPin.style.left = (x - MAIN_PIN_WIDTH / 2) + 'px';
+    mainPin.style.top = (y - MAIN_PIN_HEIGTH) + 'px';
   };
 
   var onMainPinClick = function (evt) {
