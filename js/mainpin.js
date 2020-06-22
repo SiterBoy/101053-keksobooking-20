@@ -12,20 +12,17 @@
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
 
-  var giveCoords = function () {
+  var giveCoordsOfTarget = function () {
     var coords = {
-      x: Math.round(parseInt(mainPin.style.left, 10)),
-      y: Math.round(parseInt(mainPin.style.top, 10))
+      x: Math.floor(parseInt(mainPin.style.left, 10) - MAIN_PIN_WIDTH / 2),
+      y: Math.floor(parseInt(mainPin.style.top, 10)) - MAIN_PIN_HEIGTH
     };
     return coords;
   };
 
-  var giveCoordsOfTarget = function () {
-    var coords = {
-      x: Math.floor(parseInt(mainPin.style.left, 10) + MAIN_PIN_WIDTH / 2),
-      y: Math.floor(parseInt(mainPin.style.top, 10)) + MAIN_PIN_HEIGTH
-    };
-    return coords;
+  var setPosition = function (x, y) {
+    mainPin.style.left = x + 'px';
+    mainPin.style.top = y + 'px';
   };
 
   var onMainPinClick = function (evt) {
@@ -34,44 +31,26 @@
       window.main.activatePage();
     }
 
-    var startCoords = {
-      x: evt.clientX,
-      y: evt.clientY
-    };
+    var startCoords = giveCoordsOfTarget();
+    var startX = evt.clientX;
+    var startY = evt.clientY;
 
     var onMouseMove = function (evtMove) {
       evtMove.preventDefault();
 
-      var currentCoords = giveCoords();
+      var shiftX = evtMove.clientX - startX;
+      var shiftY = evtMove.clientY - startY;
 
-      var realXOffsetPin = Math.floor(mainPin.offsetLeft + MAIN_PIN_WIDTH / 2);
-      var realYOffsetPin = Math.floor(mainPin.offsetTop + MAIN_PIN_HEIGTH);
+      var coordX = startCoords.x + shiftX;
+      var coordY = startCoords.y + shiftY;
 
-      var deltaCoords = {
-        x: evtMove.clientX - startCoords.x,
-        y: evtMove.clientY - startCoords.y
-      };
+      coordX = MIN_X > coordX ? MIN_X : coordX;
+      coordX = MAX_X < coordX ? MAX_X : coordX;
 
-      startCoords = {
-        x: evtMove.clientX,
-        y: evtMove.clientY
-      };
+      coordY = MIN_Y > coordY ? MIN_Y : coordY;
+      coordY = MAX_Y < coordY ? MAX_Y : coordY;
 
-      if (realXOffsetPin >= MIN_X && realXOffsetPin <= MAX_X) {
-        mainPin.style.left = currentCoords.x + deltaCoords.x + 'px';
-      } else if (realXOffsetPin < MIN_X) {
-        mainPin.style.left = MIN_X - MAIN_PIN_WIDTH / 2 + 'px';
-      } else {
-        mainPin.style.left = MAX_X - MAIN_PIN_WIDTH / 2 + 'px';
-      }
-
-      if (realYOffsetPin >= 130 && realYOffsetPin <= 630 + MAIN_PIN_HEIGTH) {
-        mainPin.style.top = currentCoords.y + deltaCoords.y + 'px';
-      } else if (realYOffsetPin < 130) {
-        mainPin.style.top = MIN_Y - MAIN_PIN_HEIGTH + 'px';
-      } else {
-        mainPin.style.top = MAX_Y + 'px';
-      }
+      setPosition(coordX, coordY);
 
       window.form.changeAdress();
 
