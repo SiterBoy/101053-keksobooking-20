@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+
+  var NUM_OF_APARTS = 8;
+  var MAX_ROOMS = 12;
+  var MAX_GUESTS = 20;
+
   var AVATAR_URL = 'img/avatars/user0';
   var TITLES = ['Моя хата с краю', 'Апарты у ЕЖА', 'Квартира бегемота и его друзей', 'Большой дом для грустных людей', 'Квартира с прекрасным видом', 'Болшой квартир для светил', 'Дом для вас', 'Дорогая халупка для жизни'];
   var TYPES = ['palace', 'flat', 'house', 'bungalo'];
@@ -34,9 +39,9 @@
 
   var generateApartments = function () {
     var apartments = [];
-    for (var i = 0; i < window.consts.NUM_OF_APARTS; i++) {
-      var coordX = getRandomNumber(0, window.consts.MAP_WIDTH);
-      var coordY = getRandomNumber(window.consts.MAP_MIN_Y, window.consts.MAP_MAX_Y);
+    for (var i = 0; i < NUM_OF_APARTS; i++) {
+      var coordX = getRandomNumber(0, window.map.MAP_WIDTH);
+      var coordY = getRandomNumber(window.map.MAP_MIN_Y, window.map.MAP_MAX_Y);
       apartments[i] = {
         author: AVATAR_URL + (i + 1) + '.png',
         offer: {
@@ -44,8 +49,8 @@
           address: coordX + ', ' + coordY,
           price: getRandomNumber(1, 100000),
           type: TYPES[getRandomNumber(0, TYPES.length - 1)],
-          rooms: getRandomNumber(1, window.consts.MAX_ROOMS),
-          guests: getRandomNumber(1, window.consts.MAX_GUESTS),
+          rooms: getRandomNumber(1, MAX_ROOMS),
+          guests: getRandomNumber(1, MAX_GUESTS),
           checkin: CHEKINS[getRandomNumber(0, CHEKINS.length - 1)],
           checkout: CHEKOUTS[getRandomNumber(0, CHEKOUTS.length - 1)],
           features: getRandomElements(FEAUTERES),
