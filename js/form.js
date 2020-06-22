@@ -2,9 +2,11 @@
 
 (function () {
 
+  var adForm = document.querySelector('.ad-form');
+
   var changeAdress = function () {
-    var coords = window.pins.giveCoordMainPin();
-    window.consts.adForm.querySelector('input[name="address"]').value = coords.x + ', ' + coords.y;
+    var coords = window.mainPin.giveCoordsOfTarget();
+    adForm.querySelector('input[name="address"]').value = coords.x + ', ' + coords.y;
   };
 
   var roomNumberElement = document.querySelector('#room_number');
@@ -35,8 +37,8 @@
 
   // validation
 
-  var typeOfApartSelect = window.consts.adForm.querySelector('#type');
-  var priceOfApart = window.consts.adForm.querySelector('#price');
+  var typeOfApartSelect = adForm.querySelector('#type');
+  var priceOfApart = adForm.querySelector('#price');
 
   var onChangeTypeOfApartAndPrice = function (evt) {
     var value = 0;
@@ -61,8 +63,8 @@
 
   typeOfApartSelect.addEventListener('change', onChangeTypeOfApartAndPrice);
 
-  var timeInSelect = window.consts.adForm.querySelector('#timein');
-  var timeOutSelect = window.consts.adForm.querySelector('#timeout');
+  var timeInSelect = adForm.querySelector('#timein');
+  var timeOutSelect = adForm.querySelector('#timeout');
 
   var onTimeInChange = function (evt) {
     timeOutSelect.value = evt.target.value;
@@ -75,8 +77,8 @@
   timeInSelect.addEventListener('change', onTimeInChange);
   timeOutSelect.addEventListener('change', onTimeOutChange);
 
-  var avatarFileInput = window.consts.adForm.querySelector('#avatar');
-  var imagesFileInput = window.consts.adForm.querySelector('#images');
+  var avatarFileInput = adForm.querySelector('#avatar');
+  var imagesFileInput = adForm.querySelector('#images');
 
   var onInputPhotosChange = function (evt) {
     var currentType = evt.target.files[0].type;
@@ -97,9 +99,9 @@
     }
   };
 
-  var fieldsets = window.consts.adForm.querySelectorAll('fieldset');
-  var mapFilters = window.consts.adForm.querySelectorAll('.map__filter');
-  var mapForm = window.consts.mapFiltersContainer.querySelector('.map__filters');
+  var fieldsets = adForm.querySelectorAll('fieldset');
+  var mapFilters = adForm.querySelectorAll('.map__filter');
+  var mapForm = window.map.mapFiltersContainer.querySelector('.map__filters');
 
   var switchAllForms = function (status) {
     // Инверсия статуса для стилей
@@ -112,21 +114,24 @@
     mapForm.querySelector('.map__features').disabled = newStatus;
   };
 
-  var activate = function (status) {
-    switchAllForms(status);
+  var activate = function () {
+    switchAllForms(true);
     validateRoomsAndGuests();
     changeAdress();
+    adForm.classList.remove('ad-form--disabled');
+  };
 
-    if (status) {
-      window.consts.adForm.classList.remove('ad-form--disabled');
-    } else {
-      window.consts.adForm.classList.add('ad-form--disabled');
-    }
-
+  var deactivate = function () {
+    switchAllForms(false);
+    validateRoomsAndGuests();
+    changeAdress();
+    adForm.classList.add('ad-form--disabled');
   };
 
   window.form = {
-    activate: activate
+    activate: activate,
+    deactivate: deactivate,
+    changeAdress: changeAdress
   };
 
 })();

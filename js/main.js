@@ -7,26 +7,23 @@
   var isActive = false;
 
   var activatePage = function () {
-    window.map.activate(true);
+    window.map.activate();
     window.pins.render(apartments);
-    window.form.activate(true);
+    window.form.activate();
     isActive = true;
   };
 
   var deactivatePage = function () {
-    window.map.activate(false);
-    window.form.activate(false);
+    window.map.deactivate();
+    window.form.deactivate();
     isActive = false;
   };
 
-  var onMainPinClick = function () {
-    if (!isActive) {
-      activatePage();
-    }
-  };
-
-  window.consts.mainPin.addEventListener('click', onMainPinClick);
-
   deactivatePage();
+
+  window.main = {
+    isActive: isActive,
+    activatePage: activatePage
+  };
 
 })();
