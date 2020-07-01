@@ -1,8 +1,17 @@
 'use strict';
 
 (function () {
+  var apartments = [];
 
-  var apartments = window.data.generateApartments();
+  var onLoad = function (response) {
+    apartments = response;
+  };
+
+  var onError = function (error) {
+    window.statusModals.errorMessage('Данные не были получены с сервера. Ошибка: ' + error);
+  };
+
+  window.backend.load(onLoad, onError);
 
   var isActive = false;
 
@@ -22,6 +31,7 @@
   deactivatePage();
 
   window.main = {
+    apartments: apartments,
     isActive: isActive,
     activatePage: activatePage
   };

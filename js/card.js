@@ -68,9 +68,9 @@
         break;
     }
 
-    cardImg.src = apartment.author;
+    cardImg.src = apartment.author.avatar;
     cardImg.alt = apartment.offer.title;
-    oneCard.querySelector('.popup__avatar').src = apartment.author;
+    oneCard.querySelector('.popup__avatar').src = apartment.author.avatar;
     oneCard.querySelector('.popup__title').textContent = apartment.offer.title;
     oneCard.querySelector('.popup__text--address').textContent = apartment.offer.address;
     oneCard.querySelector('.popup__text--price').textContent = apartment.offer.price + '₽/ночь';
@@ -87,7 +87,7 @@
 
   var render = function (apartment) {
     var card = createCard(apartment);
-    window.consts.mapFiltersContainer.insertAdjacentElement('beforebegin', card);
+    window.map.mapFiltersContainer.insertAdjacentElement('beforebegin', card);
   };
 
   var addCloseEvents = function () {
