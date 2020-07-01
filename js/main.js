@@ -1,14 +1,22 @@
 'use strict';
 
 (function () {
+  var apartments = [];
 
-  var apartments = window.data.generateApartments();
+  var onLoad = function (response) {
+    apartments = response;
+    window.pins.render(apartments);
+  };
+
+  var onError = function (error) {
+    window.statusModals.errorMessage('Данные не были получены с сервера. Ошибка: ' + error);
+  };
 
   var isActive = false;
 
   var activatePage = function () {
+    window.backend.load(onLoad, onError);
     window.map.activate();
-    window.pins.render(apartments);
     window.form.activate();
     isActive = true;
   };
@@ -22,6 +30,7 @@
   deactivatePage();
 
   window.main = {
+    apartments: apartments,
     isActive: isActive,
     activatePage: activatePage
   };

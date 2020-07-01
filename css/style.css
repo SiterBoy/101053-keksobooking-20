@@ -1249,3 +1249,18 @@ fieldset {
 .hidden {
   display: none;
 }
+
+
+.errorMessage{
+  position: fixed;
+  height: 50px;
+  top: 0px;
+  left: 0px;
+  width:100%;
+  line-height: 50px;
+  background: #f00;
+  color:#fff;
+  font-size: 25px;
+  text-align: center;
+  z-index: 9999;
+}

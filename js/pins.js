@@ -10,12 +10,11 @@
 
   var createPin = function (apartment) {
     var onePin = pinTemplate.cloneNode(true);
-    onePin.dataset.id = apartment.id;
     var pinImage = onePin.querySelector('img');
     var pinX = apartment.location.x - PIN_WIDTH / 2;
     var pinY = apartment.location.y - PIN_HEIGHT;
     onePin.style.cssText = 'left:' + pinX + 'px; top:' + pinY + 'px;';
-    pinImage.src = apartment.author;
+    pinImage.src = apartment.author.avatar;
     pinImage.alt = apartment.offer.title;
 
     onePin.addEventListener('click', function () {
