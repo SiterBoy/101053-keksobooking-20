@@ -18,11 +18,11 @@
     });
 
     xhr.addEventListener('timeout', function () {
-      window.statusModals.errorMessage('Превышен интервал ожидания запроса!');
+      onError('Превышен интервал ожидания запроса!');
     });
 
     xhr.addEventListener('error', function () {
-      window.statusModals.errorMessage('Непредвиденная ошибка! Попробуйте еще раз.');
+      onError('Непредвиденная ошибка! Попробуйте еще раз.');
     });
 
     return xhr;
