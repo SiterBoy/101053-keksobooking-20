@@ -2,18 +2,15 @@
 
 (function () {
 
-  var map = document.querySelector('.map');
-
   var errorMessage = function (message) {
-    var elem = document.createElement('div');
-    elem.textContent = message;
-    elem.classList.add('errorMessage');
+    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+    var currentError = errorTemplate.cloneNode(true);
+    currentError.querySelector('.error__message').textContent = message;
+    currentError.querySelector('.error__button').addEventListener('click', function () {
+      document.body.removeChild(currentError);
+    });
 
-    map.appendChild(elem);
-
-    setTimeout(function () {
-      map.removeChild(elem);
-    }, 3000);
+    document.body.appendChild(currentError);
   };
 
   window.statusModals = {

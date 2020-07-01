@@ -10,7 +10,6 @@
 
   var createPin = function (apartment) {
     var onePin = pinTemplate.cloneNode(true);
-    onePin.dataset.id = apartment.id;
     var pinImage = onePin.querySelector('img');
     var pinX = apartment.location.x - PIN_WIDTH / 2;
     var pinY = apartment.location.y - PIN_HEIGHT;

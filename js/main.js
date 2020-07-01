@@ -5,19 +5,18 @@
 
   var onLoad = function (response) {
     apartments = response;
+    window.pins.render(apartments);
   };
 
   var onError = function (error) {
     window.statusModals.errorMessage('Данные не были получены с сервера. Ошибка: ' + error);
   };
 
-  window.backend.load(onLoad, onError);
-
   var isActive = false;
 
   var activatePage = function () {
+    window.backend.load(onLoad, onError);
     window.map.activate();
-    window.pins.render(apartments);
     window.form.activate();
     isActive = true;
   };
