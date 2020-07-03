@@ -22,6 +22,7 @@
   };
 
   var deactivatePage = function () {
+    window.pins.clean();
     window.map.deactivate();
     window.form.deactivate();
     isActive = false;
@@ -30,8 +31,9 @@
   deactivatePage();
 
   window.main = {
-    apartments: apartments,
     isActive: isActive,
+    apartments: apartments,
+    deactivatePage: deactivatePage,
     activatePage: activatePage
   };
 

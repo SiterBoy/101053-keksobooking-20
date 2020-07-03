@@ -25,6 +25,15 @@
     return onePin;
   };
 
+  var clean = function () {
+    var pins = pinsArea.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var i = pins.length;
+    while (i > 0) {
+      pins[i - 1].remove();
+      i--;
+    }
+  };
+
   var render = function (apartments) {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < apartments.length; i++) {
@@ -35,6 +44,7 @@
 
   window.pins = {
     render: render,
+    clean: clean
   };
 
 })();

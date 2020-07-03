@@ -3,6 +3,7 @@
 (function () {
 
   var LOAD_URL = 'https://javascript.pages.academy/keksobooking/data';
+  var UPLOAD_URL = 'https://javascript.pages.academy/keksobooking';
 
   var createXhr = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -34,8 +35,15 @@
     xhr.send();
   };
 
+  var upload = function (onLoad, onError, data) {
+    var xhr = createXhr(onLoad, onError);
+    xhr.open('POST', UPLOAD_URL);
+    xhr.send(data);
+  };
+
   window.backend = {
-    load: load
+    load: load,
+    upload: upload
   };
 
 })();

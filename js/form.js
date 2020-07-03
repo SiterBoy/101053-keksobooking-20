@@ -106,13 +106,30 @@
   var switchAllForms = function (status) {
     // Инверсия статуса для стилей
     var newStatus = status ? false : true;
-    // Включаем/выключаем все fieldset-ы в блоке формы
     switchElementsStatus(fieldsets, newStatus);
-    // Включаем/выключаем все селекты на форме карты
     switchElementsStatus(mapFilters, newStatus);
-    // Включаем/выключаем чекбоксы на форме карты
     mapForm.querySelector('.map__features').disabled = newStatus;
   };
+
+  var onFormSubmit = function (evt) {
+    evt.preventDefault();
+
+    var data = new FormData(adForm);
+
+    var onLoad = function () {
+      window.statusModals.successMessage();
+      adForm.reset();
+      window.main.deactivatePage();
+    };
+
+    var onError = function (status) {
+      window.statusModals.errorMessage('Произошла ошибка. Код: ' + status + ' Попробуйте еще раз!');
+    };
+
+    window.backend.upload(onLoad, onError, data);
+  };
+
+  adForm.addEventListener('submit', onFormSubmit);
 
   var activate = function () {
     switchAllForms(true);
