@@ -94,13 +94,13 @@
   imagesFileInput.addEventListener('change', onInputPhotosChange);
 
   var switchElementsStatus = function (array, status) {
-    for (var i = 0; i < array.length; i++) {
-      array[i].disabled = status;
-    }
+    array.forEach(function (elem) {
+      elem.disabled = status;
+    });
   };
 
   var fieldsets = adForm.querySelectorAll('fieldset');
-  var mapFilters = adForm.querySelectorAll('.map__filter');
+  var mapFilters = document.querySelectorAll('.map__filter');
   var mapForm = window.map.mapFiltersContainer.querySelector('.map__filters');
 
   var switchAllForms = function (status) {
@@ -113,7 +113,6 @@
 
   var onFormSubmit = function (evt) {
     evt.preventDefault();
-
     var data = new FormData(adForm);
 
     var onLoad = function () {

@@ -2,6 +2,7 @@
 
 (function () {
 
+  var COL_PINS = 5;
   var PIN_HEIGHT = 70;
   var PIN_WIDTH = 50;
 
@@ -27,18 +28,25 @@
 
   var clean = function () {
     var pins = pinsArea.querySelectorAll('.map__pin:not(.map__pin--main)');
-    var i = pins.length;
-    while (i > 0) {
-      pins[i - 1].remove();
-      i--;
-    }
+    pins.forEach(function (elem) {
+      elem.remove();
+    });
   };
 
   var render = function (apartments) {
+    clean();
+
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < apartments.length; i++) {
+    var numberOfRendersPins = COL_PINS;
+
+    if (apartments.length < COL_PINS) {
+      numberOfRendersPins = apartments.length;
+    }
+
+    for (var i = 0; i < numberOfRendersPins; i++) {
       fragment.appendChild(createPin(apartments[i]));
     }
+
     pinsArea.appendChild(fragment);
   };
 
