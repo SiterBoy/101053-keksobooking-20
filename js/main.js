@@ -1,11 +1,10 @@
 'use strict';
 
 (function () {
-  var apartments = [];
 
   var onLoad = function (response) {
-    apartments = response;
-    window.pins.render(apartments);
+    window.main.apartments = response.slice();
+    window.pins.render(window.main.apartments);
   };
 
   var onError = function (error) {
@@ -32,7 +31,6 @@
 
   window.main = {
     isActive: isActive,
-    apartments: apartments,
     deactivatePage: deactivatePage,
     activatePage: activatePage
   };
