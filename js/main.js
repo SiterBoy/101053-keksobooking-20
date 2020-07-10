@@ -4,7 +4,7 @@
 
   var onLoad = function (response) {
     window.main.apartments = response.slice();
-    window.pins.render(window.main.apartments);
+    window.filters.init();
   };
 
   var onError = function (error) {
