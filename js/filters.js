@@ -40,12 +40,12 @@
     return status;
   };
 
-  var giveValueInNormalType = function (elem) {
-    if (elem.value === 'any') {
-      return elem.value;
-    } else {
-      return parseInt(elem.value, 10);
-    }
+  var checkTypeOrRoom = function (inputValue, apartmentValue) {
+    return inputValue === 'any' ? true : apartmentValue === inputValue;
+  };
+
+  var checkContinue = function (elem) {
+    return elem;
   };
 
   var init = function (aparts) {
@@ -55,48 +55,29 @@
     var filtredApartments = [];
     var typeValue = typeElem.value;
     var priceValue = priceElem.value;
-    var roomValue = giveValueInNormalType(numOfRoomElem);
-    var guestsValue = giveValueInNormalType(colOfGuestsElem);
-
+    var roomValue = (numOfRoomElem.value === 'any') ? numOfRoomElem.value : parseInt(numOfRoomElem.value, 10);
+    var guestsValue = (colOfGuestsElem.value === 'any') ? colOfGuestsElem.value : parseInt(colOfGuestsElem.value, 10);
     for (var i = 0; i < apartments.length; i++) {
       if (filtredApartments.length === MAX_COL_PINS) {
         break;
       }
 
-      var checkOffer = checkCurrentOffer(apartments[i]);
-      if (!checkOffer) {
+      var check =
+      [
+        checkCurrentOffer(apartments[i]),
+        checkTypeOrRoom(typeValue, apartments[i].offer.type),
+        checkTypeOrRoom(roomValue, apartments[i].offer.rooms),
+        checkGuests(guestsValue, apartments[i].offer.guests),
+        checkPriceLimit(priceValue, apartments[i].offer.price),
+        compareFeatures(featuresElems, apartments[i].offer.features)
+      ].every(checkContinue);
+
+      if (!check) {
         continue;
-      }
-
-      var typeCheck = typeValue === 'any' ? true : apartments[i].offer.type === typeValue;
-      if (!typeCheck) {
-        continue;
-      }
-
-      var numOfRoomCheck = roomValue === 'any' ? true : apartments[i].offer.rooms === roomValue;
-      if (!numOfRoomCheck) {
-        continue;
-      }
-
-      var colOfGuestsCheck = checkGuests(guestsValue, apartments[i].offer.guests);
-      if (!colOfGuestsCheck) {
-        continue;
-      }
-
-      var priceCheck = checkPriceLimit(priceValue, apartments[i].offer.price);
-      if (!priceCheck) {
-        continue;
-      }
-
-      var featuresCheck = compareFeatures(featuresElems, apartments[i].offer.features);
-      if (!featuresCheck) {
-        continue;
-      }
-
-
-      if (checkOffer && typeCheck && numOfRoomCheck && colOfGuestsCheck && priceCheck && featuresCheck) {
+      } else {
         filtredApartments.push(apartments[i]);
       }
+
     }
 
     window.pins.render(filtredApartments);
