@@ -2,7 +2,6 @@
 
 (function () {
 
-  var COL_PINS = 5;
   var PIN_HEIGHT = 70;
   var PIN_WIDTH = 50;
 
@@ -34,16 +33,12 @@
   };
 
   var render = function (apartments) {
+
     clean();
 
     var fragment = document.createDocumentFragment();
-    var numberOfRendersPins = COL_PINS;
 
-    if (apartments.length < COL_PINS) {
-      numberOfRendersPins = apartments.length;
-    }
-
-    for (var i = 0; i < numberOfRendersPins; i++) {
+    for (var i = 0; i < apartments.length; i++) {
       fragment.appendChild(createPin(apartments[i]));
     }
 
