@@ -11,72 +11,78 @@
   var numOfRoomElem = mapForm.querySelector('#housing-rooms');
   var colOfGuestsElem = mapForm.querySelector('#housing-guests');
 
-  var checkCurrentOffer = function (apartment) {
-    return apartment.offer ? true : false;
+  var checkCurrentOffer = function (apart) {
+    return apart.offer ? true : false;
   };
 
-  var checkPriceLimit = function (desiredPrice, apartmentPrice) {
-    switch (desiredPrice) {
+  var checkPriceLimit = function (apart, objFilters) {
+    var apartPrice = apart.offer.price;
+    switch (objFilters.price) {
       case 'any' : return true;
-      case 'middle': return apartmentPrice >= 10000 && apartmentPrice <= 50000;
-      case 'low': return apartmentPrice < 10000;
-      case 'high': return apartmentPrice > 50000;
+      case 'middle': return apartPrice >= 10000 && apartPrice <= 50000;
+      case 'low': return apartPrice < 10000;
+      case 'high': return apartPrice > 50000;
     }
     return false;
   };
 
-  var checkGuests = function (desiredGuests, apartmentGuests) {
-    switch (desiredGuests) {
+  var checkGuests = function (apart, objFilters) {
+    var apartGuests = apart.offer.guests;
+    switch (objFilters.guests) {
       case 'any' : return true;
-      case 0 : return apartmentGuests === 0;
-      default: return apartmentGuests >= desiredGuests;
+      case 0 : return apartGuests === 0;
+      default: return apartGuests >= objFilters.guests;
     }
   };
 
-  var compareFeatures = function (desiredFeatures, apartmentFeatures) {
-    var status = desiredFeatures.every(function (elem) {
-      return apartmentFeatures.includes(elem.value);
+  var compareFeatures = function (apart, objFilters) {
+    var status = objFilters.features.every(function (elem) {
+      return apart.offer.features.includes(elem.value);
     });
     return status;
   };
 
-  var checkTypeOrRoom = function (inputValue, apartmentValue) {
-    return inputValue === 'any' ? true : apartmentValue === inputValue;
+  var checkTypeOrRoom = function (apart, objFilters) {
+    return objFilters.type === 'any' ? true : apart.offer.type === objFilters.type;
   };
 
-  var checkContinue = function (elem) {
-    return elem;
-  };
+  var checkAllFilters =
+  [
+    checkCurrentOffer,
+    checkTypeOrRoom,
+    checkTypeOrRoom,
+    checkGuests,
+    checkPriceLimit,
+    compareFeatures
+  ];
 
   var init = function (aparts) {
+    var filtredApartments = [];
     var apartments = aparts;
 
-    var featuresElems = Array.from(mapForm.querySelectorAll('#housing-features input:checked'));
-    var filtredApartments = [];
-    var typeValue = typeElem.value;
-    var priceValue = priceElem.value;
-    var roomValue = (numOfRoomElem.value === 'any') ? numOfRoomElem.value : parseInt(numOfRoomElem.value, 10);
-    var guestsValue = (colOfGuestsElem.value === 'any') ? colOfGuestsElem.value : parseInt(colOfGuestsElem.value, 10);
+    var filters = {
+      features: Array.from(mapForm.querySelectorAll('#housing-features input:checked')),
+      type: typeElem.value,
+      price: priceElem.value,
+      rooms: (numOfRoomElem.value === 'any') ? numOfRoomElem.value : parseInt(numOfRoomElem.value, 10),
+      guests: (colOfGuestsElem.value === 'any') ? colOfGuestsElem.value : parseInt(colOfGuestsElem.value, 10)
+    };
+
     for (var i = 0; i < apartments.length; i++) {
+      var apart = apartments[i];
       if (filtredApartments.length === MAX_COL_PINS) {
         break;
       }
 
-      var check =
-      [
-        checkCurrentOffer(apartments[i]),
-        checkTypeOrRoom(typeValue, apartments[i].offer.type),
-        checkTypeOrRoom(roomValue, apartments[i].offer.rooms),
-        checkGuests(guestsValue, apartments[i].offer.guests),
-        checkPriceLimit(priceValue, apartments[i].offer.price),
-        compareFeatures(featuresElems, apartments[i].offer.features)
-      ].every(checkContinue);
+      var check = checkAllFilters.every(function (elem) {
+        return elem(apart, filters);
+      });
 
       if (!check) {
         continue;
-      } else {
-        filtredApartments.push(apartments[i]);
       }
+
+      filtredApartments.push(apartments[i]);
 
     }
 
