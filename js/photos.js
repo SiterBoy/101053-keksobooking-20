@@ -31,7 +31,7 @@
   var onAvatarChose = function (evt) {
     var imgElem = userAvatarElem.querySelector('img');
     var file = evt.target.files[0];
-    if (file){
+    if (file) {
       var isImage = checkIsImage(file);
       if (isImage) {
         var reader = createReader(file);

@@ -89,7 +89,7 @@
         evt.target.setCustomValidity('');
       }
       evt.target.reportValidity();
-      }
+    }
   };
 
   avatarFileInput.addEventListener('change', onInputPhotosChange);
