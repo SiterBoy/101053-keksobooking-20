@@ -81,13 +81,15 @@
   var imagesFileInput = adForm.querySelector('#images');
 
   var onInputPhotosChange = function (evt) {
-    var currentType = evt.target.files[0].type;
-    if (currentType !== 'image/jpeg' && currentType !== 'image/png') {
-      evt.target.setCustomValidity('Файл должен быть изображением');
-    } else {
-      evt.target.setCustomValidity('');
-    }
-    evt.target.reportValidity();
+    if (evt.target.files[0]) {
+      var currentType = evt.target.files[0].type;
+      if (currentType !== 'image/jpeg' && currentType !== 'image/png') {
+        evt.target.setCustomValidity('Файл должен быть изображением');
+      } else {
+        evt.target.setCustomValidity('');
+      }
+      evt.target.reportValidity();
+      }
   };
 
   avatarFileInput.addEventListener('change', onInputPhotosChange);
