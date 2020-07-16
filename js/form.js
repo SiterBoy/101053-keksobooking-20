@@ -77,24 +77,6 @@
   timeInSelect.addEventListener('change', onTimeInChange);
   timeOutSelect.addEventListener('change', onTimeOutChange);
 
-  var avatarFileInput = adForm.querySelector('#avatar');
-  var imagesFileInput = adForm.querySelector('#images');
-
-  var onInputPhotosChange = function (evt) {
-    if (evt.target.files[0]) {
-      var currentType = evt.target.files[0].type;
-      if (currentType !== 'image/jpeg' && currentType !== 'image/png') {
-        evt.target.setCustomValidity('Файл должен быть изображением');
-      } else {
-        evt.target.setCustomValidity('');
-      }
-      evt.target.reportValidity();
-    }
-  };
-
-  avatarFileInput.addEventListener('change', onInputPhotosChange);
-  imagesFileInput.addEventListener('change', onInputPhotosChange);
-
   var switchElementsStatus = function (array, status) {
     array.forEach(function (elem) {
       elem.disabled = status;

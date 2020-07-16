@@ -22,37 +22,39 @@
     return reader;
   };
 
-  var checkIsImage = function (file) {
-    return IMAGES_TYPES.some(function (it) {
+  var validateImage = function (file, evt) {
+    var validity = IMAGES_TYPES.some(function (it) {
       return it === file.type;
     });
+
+    if (!validity) {
+      evt.target.setCustomValidity('Файл должен быть изображением');
+    } else {
+      evt.target.setCustomValidity('');
+    }
+
+    evt.target.reportValidity();
+    return validity;
   };
 
   var onAvatarChose = function (evt) {
     var imgElem = userAvatarElem.querySelector('img');
     var file = evt.target.files[0];
-    if (file) {
-      var isImage = checkIsImage(file);
-      if (isImage) {
-        var reader = createReader(file);
-        reader.addEventListener('load', function () {
-          imgElem.src = reader.result;
-        });
-      }
+    if (file && validateImage(file, evt)) {
+      var reader = createReader(file);
+      reader.addEventListener('load', function () {
+        imgElem.src = reader.result;
+      });
     }
   };
 
   var onApartImageChose = function (evt) {
     var file = evt.target.files[0];
-    if (file) {
-      var isImage = checkIsImage(file);
-      if (isImage) {
-        var reader = createReader(file);
-
-        reader.addEventListener('load', function () {
-          createImg(reader.result, userApartPhotoElem);
-        });
-      }
+    if (file && validateImage(file, evt)) {
+      var reader = createReader(file);
+      reader.addEventListener('load', function () {
+        createImg(reader.result, userApartPhotoElem);
+      });
     }
   };
 
