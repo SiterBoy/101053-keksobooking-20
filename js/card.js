@@ -6,25 +6,28 @@
 
   var createFeatures = function (features) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < features.length; i++) {
+
+    features.forEach(function (elem) {
       var li = document.createElement('li');
-      li.classList = 'popup__feature popup__feature--' + features[i];
+      li.classList = 'popup__feature popup__feature--' + elem;
       fragment.appendChild(li);
-    }
+    });
+
     return fragment;
   };
 
   var createFotos = function (photos) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < photos.length; i++) {
+
+    photos.forEach(function (elem) {
       var img = document.createElement('img');
-      img.src = photos[i];
+      img.src = elem;
       img.classList.add('popup__photo');
       img.alt = 'Фотография жилья';
       img.width = 45;
       img.height = 40;
       fragment.appendChild(img);
-    }
+    });
     return fragment;
   };
 

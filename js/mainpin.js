@@ -25,6 +25,15 @@
     mainPin.style.top = (y - MAIN_PIN_HEIGTH) + 'px';
   };
 
+  var onMainPinEnterPress = function () {
+    window.main.activatePage();
+    document.removeEventListener('keypress', onMainPinEnterPress);
+  };
+
+  var init = function () {
+    document.addEventListener('keypress', onMainPinEnterPress);
+  };
+
   var onMainPinClick = function (evt) {
     evt.preventDefault();
     if (!window.main.isActive) {
@@ -71,6 +80,7 @@
   mainPin.addEventListener('mousedown', onMainPinClick);
 
   window.mainPin = {
+    init: init,
     giveCoordsOfTarget: giveCoordsOfTarget,
   };
 

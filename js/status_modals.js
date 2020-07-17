@@ -38,7 +38,6 @@
     var currentSuccess = successTemplate.cloneNode(true);
 
     var onEscPress = function (evt) {
-      evt.preventDefault();
       if (evt.key === 'Escape') {
         currentSuccess.remove();
         document.removeEventListener('keydown', onEscPress);
@@ -46,6 +45,7 @@
     };
 
     var onDocumentClick = function () {
+      window.card.deleteCurrent();
       currentSuccess.remove();
       document.removeEventListener('click', onDocumentClick);
     };

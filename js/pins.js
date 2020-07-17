@@ -33,15 +33,12 @@
   };
 
   var render = function (apartments) {
-
     clean();
 
     var fragment = document.createDocumentFragment();
-
-    for (var i = 0; i < apartments.length; i++) {
-      fragment.appendChild(createPin(apartments[i]));
-    }
-
+    apartments.forEach(function (elem) {
+      fragment.appendChild(createPin(elem));
+    });
     pinsArea.appendChild(fragment);
   };
 

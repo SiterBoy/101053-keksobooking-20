@@ -35,8 +35,6 @@
   roomNumberElement.addEventListener('change', onRoomsAndGuestsChange);
   guestNumberElement.addEventListener('change', onRoomsAndGuestsChange);
 
-  // validation
-
   var typeOfApartSelect = adForm.querySelector('#type');
   var priceOfApart = adForm.querySelector('#price');
 
