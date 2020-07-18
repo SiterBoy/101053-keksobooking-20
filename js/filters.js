@@ -12,7 +12,7 @@
   var colOfGuestsElem = mapForm.querySelector('#housing-guests');
 
   var checkCurrentOffer = function (apart) {
-    return apart.offer ? true : false;
+    return !!apart.offer;
   };
 
   var checkPriceLimit = function (apart, objFilters) {
@@ -36,10 +36,9 @@
   };
 
   var compareFeatures = function (apart, objFilters) {
-    var status = objFilters.features.every(function (elem) {
+    return objFilters.features.every(function (elem) {
       return apart.offer.features.includes(elem.value);
     });
-    return status;
   };
 
   var checkTypeOrRoom = function (apart, objFilters) {
@@ -55,6 +54,11 @@
     checkPriceLimit,
     compareFeatures
   ];
+
+  var clean = function () {
+    mapForm.reset();
+  };
+
 
   var init = function (aparts) {
     var filtredApartments = [];
@@ -97,7 +101,8 @@
   mapForm.addEventListener('change', initDebounce);
 
   window.filters = {
-    init: init
+    init: init,
+    clean: clean
   };
 
 })();

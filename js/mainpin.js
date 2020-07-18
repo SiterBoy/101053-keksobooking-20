@@ -4,6 +4,9 @@
   var MAIN_PIN_HEIGTH = 70;
   var MAIN_PIN_WIDTH = 65;
 
+  var START_COORD_X = 602;
+  var START_COORD_Y = 445;
+
   var MIN_X = 0;
   var MAX_X = window.map.MAP_WIDTH;
   var MIN_Y = window.map.MAP_MIN_Y;
@@ -13,16 +16,20 @@
   var mainPin = map.querySelector('.map__pin--main');
 
   var giveCoordsOfTarget = function () {
-    var coords = {
+    return {
       x: Math.floor(mainPin.offsetLeft + MAIN_PIN_WIDTH / 2),
       y: Math.floor(mainPin.offsetTop + MAIN_PIN_HEIGTH)
     };
-    return coords;
   };
 
   var setPosition = function (x, y) {
     mainPin.style.left = (x - MAIN_PIN_WIDTH / 2) + 'px';
     mainPin.style.top = (y - MAIN_PIN_HEIGTH) + 'px';
+  };
+
+  var setStartPisition = function () {
+    setPosition(START_COORD_X, START_COORD_Y);
+    window.form.changeAdress();
   };
 
   var onMainPinEnterPress = function () {
@@ -60,7 +67,6 @@
       coordY = MAX_Y < coordY ? MAX_Y : coordY;
 
       setPosition(coordX, coordY);
-
       window.form.changeAdress();
 
     };
@@ -82,6 +88,7 @@
   window.mainPin = {
     init: init,
     giveCoordsOfTarget: giveCoordsOfTarget,
+    setStartPisition: setStartPisition
   };
 
 })();

@@ -3,6 +3,18 @@
 (function () {
 
   var adForm = document.querySelector('.ad-form');
+  var resetButton = document.querySelector('.ad-form__reset');
+
+  var onResetButtonClick = function (evt) {
+    evt.preventDefault();
+    adForm.reset();
+    window.filters.clean();
+    window.pins.clean();
+    window.card.deleteCurrent();
+    window.mainPin.setStartPisition();
+  };
+
+  resetButton.addEventListener('click', onResetButtonClick);
 
   var changeAdress = function () {
     var coords = window.mainPin.giveCoordsOfTarget();

@@ -4,6 +4,7 @@
 
   var LOAD_URL = 'https://javascript.pages.academy/keksobooking/data';
   var UPLOAD_URL = 'https://javascript.pages.academy/keksobooking';
+  var SUCCESS_CODE = 200;
 
   var createXhr = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -11,7 +12,7 @@
     xhr.timeout = 10000;
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === SUCCESS_CODE) {
         onLoad(xhr.response);
       } else {
         onError(xhr.status);
